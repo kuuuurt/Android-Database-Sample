@@ -8,6 +8,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.notes.noteapp.data.NoteContract;
+
 public class ViewNoteActivity extends AppCompatActivity {
 
     private long notebookId;
@@ -55,7 +57,11 @@ public class ViewNoteActivity extends AppCompatActivity {
             intent.putExtra("content", content);
             startActivity(intent);
         } else if(id == R.id.action_delete){
-
+            this.getContentResolver().delete(
+                    NoteContract.NoteEntry.CONTENT_URI,
+                    NoteContract.NoteEntry.COLUMN_NAME + " = ?",
+                    new String[]{noteName}
+            );
 
             Intent intent = new Intent(this, NoteActivity.class);
             intent.putExtra("notebookId", notebookId);
