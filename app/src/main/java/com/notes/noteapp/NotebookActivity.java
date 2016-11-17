@@ -2,15 +2,9 @@ package com.notes.noteapp;
 
 import android.content.ContentValues;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -25,10 +19,7 @@ import android.widget.ListView;
 
 import com.notes.noteapp.data.NoteContract;
 
-public class NotebookActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
-
-    private static final int NOTEBOOK_LOADER = 0;
-    private NotebookAdapter mNotebookAdapter;
+public class NotebookActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,42 +38,12 @@ public class NotebookActivity extends AppCompatActivity implements LoaderManager
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        getSupportLoaderManager().initLoader(NOTEBOOK_LOADER, null, this);
-
-        mNotebookAdapter = new NotebookAdapter(this, null, true);
         ListView listView = (ListView)findViewById(R.id.list_view_notebook);
-        listView.setAdapter(mNotebookAdapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Cursor data = mNotebookAdapter.getCursor();
-                Intent noteIntent = new Intent(NotebookActivity.this, NoteActivity.class);
-                noteIntent.putExtra("notebookId", data.getLong(data.getColumnIndex(
-                        NoteContract.NotebookEntry._ID)));
-                startActivity(noteIntent);
-            }
-        });
 
         registerForContextMenu(listView);
 
     }
 
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this,
-                NoteContract.NotebookEntry.CONTENT_URI,
-                null,null,null,null);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mNotebookAdapter.swapCursor(data);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        mNotebookAdapter.swapCursor(null);
-    }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -112,11 +73,7 @@ public class NotebookActivity extends AppCompatActivity implements LoaderManager
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        NotebookActivity.this.getContentResolver().delete(
-                                NoteContract.NotebookEntry.CONTENT_URI,
-                                NoteContract.NotebookEntry._ID + " = ?",
-                                new String[]{String.valueOf(id)}
-                        );
+
                     }
                 })
                 .setNegativeButton("No", null)
@@ -152,21 +109,10 @@ public class NotebookActivity extends AppCompatActivity implements LoaderManager
                             values.put(NoteContract.NotebookEntry.COLUMN_DESCRIPTION, desc);
 
                             if(mode.equals("Add")) {
-                                NotebookActivity.this.getContentResolver().insert(
-                                        NoteContract.NotebookEntry.CONTENT_URI,
-                                        values
-                                );
-                                Snackbar.make(findViewById(android.R.id.content), "Notebook Added!", Snackbar.LENGTH_SHORT).show();
+
                             } else if(mode.equals("Edit")){
-                                NotebookActivity.this.getContentResolver().update(
-                                        NoteContract.NotebookEntry.CONTENT_URI,
-                                        values,
-                                        NoteContract.NotebookEntry._ID + " = ?",
-                                        new String[]{String.valueOf(id)}
-                                );
-                                Snackbar.make(findViewById(android.R.id.content), "Notebook Edited!", Snackbar.LENGTH_SHORT).show();
+
                             }
-                            NotebookActivity.this.getContentResolver().notifyChange(NoteContract.NotebookEntry.CONTENT_URI, null);
                             dialog.dismiss();
                         } else {
                             if(name.equals(""))

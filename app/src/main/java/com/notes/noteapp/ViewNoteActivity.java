@@ -1,15 +1,12 @@
 package com.notes.noteapp;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
-
-import com.notes.noteapp.data.NoteContract;
 
 public class ViewNoteActivity extends AppCompatActivity {
 
@@ -36,17 +33,7 @@ public class ViewNoteActivity extends AppCompatActivity {
         TextView txtTitle = (TextView)findViewById(R.id.text_note_title);
         TextView txtContent = (TextView)findViewById(R.id.text_note_content);
 
-        Cursor c = this.getContentResolver().query(
-                NoteContract.NoteEntry.buildNoteUriWithTitle(noteName),
-                null, null, null, null
-        );
-        c.moveToFirst();
 
-
-        content = c.getString(c.getColumnIndex(NoteContract.NoteEntry.COLUMN_CONTENT));
-        noteId = c.getLong(c.getColumnIndex(NoteContract.NoteEntry._ID));
-
-        txtTitle.setText(c.getString(c.getColumnIndex(NoteContract.NoteEntry.COLUMN_NAME)));
         txtContent.setText(content);
     }
 
@@ -68,11 +55,7 @@ public class ViewNoteActivity extends AppCompatActivity {
             intent.putExtra("content", content);
             startActivity(intent);
         } else if(id == R.id.action_delete){
-            this.getContentResolver().delete(
-                    NoteContract.NoteEntry.CONTENT_URI,
-                    NoteContract.NoteEntry.COLUMN_NAME + " = ?",
-                    new String[]{noteName}
-            );
+
 
             Intent intent = new Intent(this, NoteActivity.class);
             intent.putExtra("notebookId", notebookId);

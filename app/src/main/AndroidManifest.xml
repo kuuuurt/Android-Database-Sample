@@ -28,10 +28,6 @@
                 android:value="com.notes.noteapp.MainActivity"/>
         </activity>
 
-        <provider
-            android:name=".data.NoteProvider"
-            android:authorities="com.notes.noteapp"/>
-
         <activity
             android:name=".NoteActivity"
             android:label="@string/title_activity_note"

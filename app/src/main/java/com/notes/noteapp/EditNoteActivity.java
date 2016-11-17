@@ -4,13 +4,11 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.notes.noteapp.data.NoteContract;
 
@@ -85,29 +83,18 @@ public class EditNoteActivity extends AppCompatActivity {
 
                     Intent intent = null;
                     if(editMode){
-                        EditNoteActivity.this.getContentResolver().update(
-                                NoteContract.NoteEntry.CONTENT_URI,
-                                values,
-                                NoteContract.NoteEntry._ID + " = ?",
-                                new String[]{String.valueOf(noteId)}
-                        );
-                        Toast.makeText(EditNoteActivity.this, "Note Edited!", Toast.LENGTH_SHORT).show();Snackbar.make(findViewById(android.R.id.content), "Note Edited!", Snackbar.LENGTH_SHORT)
-                                .show();
+
                         intent = new Intent(EditNoteActivity.this, ViewNoteActivity.class);
                         intent.putExtra("notebookId", notebookId);
                         intent.putExtra("name", title);
 
                     } else {
-                        EditNoteActivity.this.getContentResolver().insert(
-                                NoteContract.NoteEntry.CONTENT_URI,
-                                values
-                        );
-                        Toast.makeText(EditNoteActivity.this, "Note Added!", Toast.LENGTH_SHORT).show();
+
                         intent = new Intent(EditNoteActivity.this, NoteActivity.class);
                         intent.putExtra("notebookId", notebookId);
 
                     }
-                    EditNoteActivity.this.getContentResolver().notifyChange(NoteContract.NotebookEntry.CONTENT_URI, null);
+
                     startActivity(intent);
 
                 } else {
