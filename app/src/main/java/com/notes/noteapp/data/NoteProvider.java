@@ -149,6 +149,25 @@ public class NoteProvider extends ContentProvider{
 
     @Override
     public int update(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
-        return 0;
+        int rowsUpdated;
+
+        switch(uriMatcher().match(uri)){
+            case NOTEBOOK:
+                rowsUpdated = mDbHelper.getWritableDatabase().update(
+                        NoteContract.NotebookEntry.TABLE_NAME, contentValues, selection,
+                        selectionArgs);
+                break;
+            case NOTE:
+                rowsUpdated = mDbHelper.getWritableDatabase().update(
+                        NoteContract.NoteEntry.TABLE_NAME, contentValues, selection,
+                        selectionArgs);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown/Unsupported uri: " + uri);
+        }
+        if(rowsUpdated != 0){
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowsUpdated;
     }
 }
