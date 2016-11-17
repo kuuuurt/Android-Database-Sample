@@ -84,7 +84,12 @@ public class EditNoteActivity extends AppCompatActivity {
 
                     Intent intent = null;
                     if(editMode){
-
+                        EditNoteActivity.this.getContentResolver().update(
+                                NoteContract.NoteEntry.CONTENT_URI,
+                                values,
+                                NoteContract.NoteEntry._ID + " = ?",
+                                new String[]{String.valueOf(noteId)}
+                        );
                         intent = new Intent(EditNoteActivity.this, ViewNoteActivity.class);
                         intent.putExtra("notebookId", notebookId);
                         intent.putExtra("name", title);
