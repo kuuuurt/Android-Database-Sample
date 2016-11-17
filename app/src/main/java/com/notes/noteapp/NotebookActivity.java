@@ -137,7 +137,13 @@ public class NotebookActivity extends AppCompatActivity implements LoaderManager
                                 );
                                 Snackbar.make(findViewById(android.R.id.content), "Notebook Added!", Snackbar.LENGTH_SHORT).show();
                             } else if(mode.equals("Edit")){
-
+                                NotebookActivity.this.getContentResolver().update(
+                                        NoteContract.NotebookEntry.CONTENT_URI,
+                                        values,
+                                        NoteContract.NotebookEntry._ID + " = ?",
+                                        new String[]{String.valueOf(id)}
+                                );
+                                Snackbar.make(findViewById(android.R.id.content), "Notebook Edited!", Snackbar.LENGTH_SHORT).show();
                             }
                             dialog.dismiss();
                         } else {
