@@ -142,8 +142,25 @@ public class NoteProvider extends ContentProvider{
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         final SQLiteDatabase db = mDbHelper.getWritableDatabase();
-        int rowsDeleted = 0;
+        int rowsDeleted;
 
+        if(selection == null)
+            selection = "1";
+        switch (uriMatcher().match(uri)) {
+            case NOTEBOOK:
+                rowsDeleted = db.delete(
+                        NoteContract.NotebookEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            case NOTE:
+                rowsDeleted = db.delete(
+                        NoteContract.NoteEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        if (rowsDeleted != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
         return rowsDeleted;
     }
 
