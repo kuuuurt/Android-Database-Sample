@@ -2,10 +2,15 @@ package com.notes.noteapp;
 
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -20,7 +25,10 @@ import android.widget.ListView;
 
 import com.notes.noteapp.data.NoteContract;
 
-public class NotebookActivity extends AppCompatActivity {
+public class NotebookActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>   {
+
+    private static final int NOTEBOOK_LOADER = 0;
+    private NotebookAdapter mNotebookAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +47,20 @@ public class NotebookActivity extends AppCompatActivity {
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        getSupportLoaderManager().initLoader(NOTEBOOK_LOADER, null, this);
+        mNotebookAdapter = new NotebookAdapter(this, null, true);
         ListView listView = (ListView)findViewById(R.id.list_view_notebook);
+        listView.setAdapter(mNotebookAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Cursor data = mNotebookAdapter.getCursor();
+                Intent noteIntent = new Intent(NotebookActivity.this, NoteActivity.class);
+                noteIntent.putExtra("notebookId", data.getLong(data.getColumnIndex(
+                        NoteContract.NotebookEntry._ID)));
+                startActivity(noteIntent);
+            }
+        });
 
         registerForContextMenu(listView);
 
@@ -131,5 +152,24 @@ public class NotebookActivity extends AppCompatActivity {
             }
         });
         dialog.show();
+    }
+
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(this,
+                NoteContract.NotebookEntry.CONTENT_URI,
+                null,null,null,null);
+    }
+
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mNotebookAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mNotebookAdapter.swapCursor(null);
     }
 }
