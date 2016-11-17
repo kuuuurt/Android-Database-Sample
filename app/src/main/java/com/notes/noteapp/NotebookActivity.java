@@ -95,7 +95,11 @@ public class NotebookActivity extends AppCompatActivity implements LoaderManager
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-
+                        NotebookActivity.this.getContentResolver().delete(
+                                NoteContract.NotebookEntry.CONTENT_URI,
+                                NoteContract.NotebookEntry._ID + " = ?",
+                                new String[]{String.valueOf(id)}
+                        );
                     }
                 })
                 .setNegativeButton("No", null)
