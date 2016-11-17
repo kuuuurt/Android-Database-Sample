@@ -30,6 +30,30 @@ public class NoteProvider extends ContentProvider{
         return matcher;
     }
 
+    private Cursor getNoteByTitle(Uri uri, String[] projection, String sortOrder) {
+        return mDbHelper.getReadableDatabase().query(
+                NoteContract.NoteEntry.TABLE_NAME,
+                projection,
+                NoteContract.NoteEntry.COLUMN_NAME + " = ?",
+                new String[]{NoteContract.NoteEntry.getTitleFromUri(uri)},
+                null,
+                null,
+                sortOrder
+        );
+    }
+
+    private Cursor getNotesByNotebook(Uri uri, String[] projection, String sortOrder) {
+        return mDbHelper.getReadableDatabase().query(
+                NoteContract.NoteEntry.TABLE_NAME,
+                projection,
+                NoteContract.NoteEntry.COLUMN_NOTEBOOK_KEY + " = ?",
+                new String[]{String.valueOf(NoteContract.NoteEntry.getIDFromUri(uri))},
+                null,
+                null,
+                sortOrder
+        );
+    }
+
 
     @Override
     public boolean onCreate() {
@@ -37,11 +61,42 @@ public class NoteProvider extends ContentProvider{
         return false;
     }
 
+
     @Nullable
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         Cursor data = null;
-
+        switch (uriMatcher().match(uri)){
+            case NOTEBOOK:
+                data = mDbHelper.getReadableDatabase().query(
+                        NoteContract.NotebookEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null, null,
+                        sortOrder
+                );
+                break;
+            case NOTE:
+                data = mDbHelper.getReadableDatabase().query(
+                        NoteContract.NoteEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null, null,
+                        sortOrder
+                );
+                break;
+            case NOTE_WITH_TITLE:
+                data = getNoteByTitle(uri, projection, sortOrder);
+                break;
+            case NOTE_WITH_NOTEBOOK:
+                data = getNotesByNotebook(uri, projection, sortOrder);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unsupported Uri: " + uri.toString());
+        }
+        data.setNotificationUri(getContext().getContentResolver(), uri);
         return data;
     }
 
