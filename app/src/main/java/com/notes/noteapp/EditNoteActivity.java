@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.notes.noteapp.data.NoteContract;
 
@@ -89,7 +90,11 @@ public class EditNoteActivity extends AppCompatActivity {
                         intent.putExtra("name", title);
 
                     } else {
-
+                        EditNoteActivity.this.getContentResolver().insert(
+                                NoteContract.NoteEntry.CONTENT_URI,
+                                values
+                        );
+                        Toast.makeText(EditNoteActivity.this, "Note Added!", Toast.LENGTH_SHORT).show();
                         intent = new Intent(EditNoteActivity.this, NoteActivity.class);
                         intent.putExtra("notebookId", notebookId);
 
