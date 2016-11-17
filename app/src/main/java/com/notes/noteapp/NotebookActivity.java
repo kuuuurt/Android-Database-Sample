@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -109,7 +110,11 @@ public class NotebookActivity extends AppCompatActivity {
                             values.put(NoteContract.NotebookEntry.COLUMN_DESCRIPTION, desc);
 
                             if(mode.equals("Add")) {
-
+                                NotebookActivity.this.getContentResolver().insert(
+                                        NoteContract.NotebookEntry.CONTENT_URI,
+                                        values
+                                );
+                                Snackbar.make(findViewById(android.R.id.content), "Notebook Added!", Snackbar.LENGTH_SHORT).show();
                             } else if(mode.equals("Edit")){
 
                             }
