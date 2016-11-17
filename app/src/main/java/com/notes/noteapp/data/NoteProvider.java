@@ -48,7 +48,18 @@ public class NoteProvider extends ContentProvider{
     @Nullable
     @Override
     public String getType(Uri uri) {
-        return null;
+        switch (uriMatcher().match(uri)){
+            case NOTEBOOK:
+                return NoteContract.NotebookEntry.CONTENT_TYPE_DIR;
+            case NOTE:
+                return NoteContract.NoteEntry.CONTENT_TYPE_DIR;
+            case NOTE_WITH_TITLE:
+                return NoteContract.NoteEntry.CONTENT_TYPE_ITEM;
+            case NOTE_WITH_NOTEBOOK:
+                return NoteContract.NoteEntry.CONTENT_TYPE_DIR;
+            default:
+                throw new UnsupportedOperationException("Unsupported Uri: " + uri.toString());
+        }
     }
 
     @Nullable
