@@ -65,7 +65,22 @@ public class NoteProvider extends ContentProvider{
     @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues contentValues) {
-
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        long id = -1;
+        switch (uriMatcher().match(uri)){
+            case NOTEBOOK:
+                id = db.insert(NoteContract.NotebookEntry.TABLE_NAME, null, contentValues);
+                if(id != -1)
+                    return NoteContract.NotebookEntry.CONTENT_URI;
+                break;
+            case NOTE:
+                id = db.insert(NoteContract.NoteEntry.TABLE_NAME, null, contentValues);
+                if(id != -1)
+                    return NoteContract.NoteEntry.CONTENT_URI;
+                break;
+            default:
+                throw new UnsupportedOperationException("Unsopported Uri: " + uri.toString());
+        }
         return null;
     }
 
